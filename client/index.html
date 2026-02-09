@@ -1,1 +1,121 @@
 
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Primal-Workout</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <nav>
+        <div class="logo"><a href="main.html" style="color: inherit; text-decoration: none;">Primal-Fit</a></div>
+        <button class="nav-burger" id="nav-burger" aria-label="Menu"><span></span><span></span><span></span></button>
+        <ul class="nav-links" id="nav-links">
+            <li><a href="main.html">Home</a></li>
+            <li><a href="workout-plans.html">Workout Plans</a></li>
+            <li><a href="rate-us.html">Rate Us</a></li>
+            <li><a href="about.html">About Us</a></li>
+            <li class="nav-guest"><a href="#" id="nav-login">Login</a></li>
+            <li class="nav-guest"><a href="#" id="nav-register">Register</a></li>
+            <li id="nav-profile-wrap" class="hidden">
+                <div class="profile-dropdown" id="profile-dropdown">
+                    <button class="dropdown-toggle" id="profile-dropdown-toggle" type="button">My Profile ▾</button>
+                    <ul class="dropdown-menu">
+                        <li><a href="profile.html">My Profile</a></li>
+                        <li><a href="admin.html" id="nav-manage-users" style="display:none">Manage Users</a></li>
+                        <li><button type="button" id="nav-logout">Log out</button></li>
+                    </ul>
+                </div>
+            </li>
+            <li><button id="theme-toggle" class="theme-toggle-btn" type="button">Switch Theme</button></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <!-- Auth Section -->
+        <div id="auth-section">
+            <p id="auth-error" class="error-msg hidden" style="margin-bottom: 1rem;"></p>
+            <div id="login-form" class="form-container">
+                <h2>Login</h2>
+                <form id="loginForm">
+                    <input type="email" id="login-email" placeholder="Email (e.g. user@domain.com)" required>
+                    <input type="password" id="login-password" placeholder="Password" required>
+                    <button type="submit">Login</button>
+                </form>
+                <p><a href="forgot-password.html">Forgot password?</a></p>
+                <p>Don't have an account? <span id="show-register">Register</span></p>
+            </div>
+
+            <div id="register-form" class="form-container hidden">
+                <h2>Register</h2>
+                <form id="registerForm">
+                    <input type="text" id="reg-username" placeholder="Username (min 2 characters)" required minlength="2">
+                    <input type="email" id="reg-email" placeholder="Email (e.g. example@domain.com)" required>
+                    <input type="password" id="reg-password" placeholder="Password (min 6 characters)" required minlength="6">
+                    <button type="submit">Register</button>
+                </form>
+                <p>Already have an account? <span id="show-login">Login</span></p>
+            </div>
+        </div>
+
+        <!-- Dashboard Section -->
+        <div id="dashboard-section" class="hidden">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+                <h2 id="user-greeting">Welcome!</h2>
+                <div style="display: flex; gap: 0.5rem;">
+                    <a href="dashboard.html" class="btn" style="width: auto; text-decoration: none; display: inline-block;">Dashboard</a>
+                    <button id="logout-btn" style="width: auto; background-color: #666;">Logout</button>
+                </div>
+            </div>
+
+            <div id="upgrade-section" class="hidden" style="text-align: center; margin-bottom: 20px;">
+                <p>Want custom workout plans tailored to your body and goals?</p>
+                <button id="upgrade-btn" class="upgrade-btn">Upgrade to Premium</button>
+            </div>
+
+            <div id="premium-features" class="hidden">
+                <h3>Generate Custom Workout</h3>
+                <form id="generateForm">
+                    <p>Enter your details to generate a personalized plan:</p>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <input type="number" id="gen-age" placeholder="Age" required>
+                        <input type="number" id="gen-height" placeholder="Height (cm)" required>
+                        <input type="number" id="gen-weight" placeholder="Weight (kg)" required>
+                        <input type="number" id="gen-goal-weight" placeholder="Goal Weight (kg)" required>
+                    </div>
+                    <select id="gen-gender">
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                    </select>
+                    <select id="gen-goal">
+                        <option value="loose_fat">Loose Fat</option>
+                        <option value="gain_muscle">Gain Muscle</option>
+                        <option value="maintain">Maintain</option>
+                        <option value="endurance">Endurance</option>
+                        <option value="strength">Strength</option>
+                    </select>
+                    <button type="submit">Generate Plan</button>
+                </form>
+            </div>
+
+            <div id="workouts-container">
+                <h3>Available Workouts</h3>
+                <div id="workout-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="site-footer">
+        <p>© 2025 Primal-Fit. All rights reserved.</p>
+        <p>Built for everyone who wants to get stronger and healthier.</p>
+    </footer>
+
+    <script src="js/api.js"></script>
+    <script src="js/nav.js"></script>
+    <script src="js/main.js"></script>
+</body>
+
+</html>
