@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us — Primal-Fit</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .about-section { max-width: 640px; margin: 2rem auto; }
+        .about-section h2 { margin-bottom: 1rem; color: var(--text-color); }
+        .about-section h3 { font-size: 1rem; color: var(--accent-color); margin: 1.5rem 0 0.5rem; }
+        .about-section p, .about-section ul { color: var(--muted-text); line-height: 1.6; margin: 0 0 0.5rem; }
+        .about-section ul { padding-left: 1.5rem; }
+        .about-section a { color: var(--accent-color); }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="logo"><a href="main.html" style="color: inherit; text-decoration: none;">Primal-Fit</a></div>
+        <button class="nav-burger" id="nav-burger" aria-label="Menu"><span></span><span></span><span></span></button>
+        <ul class="nav-links" id="nav-links">
+            <li><a href="main.html">Home</a></li>
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="workout-plans.html">Workout Plans</a></li>
+            <li><a href="exercises.html">Exercises</a></li>
+            <li><a href="calendar.html">Calendar</a></li>
+            <li><a href="history.html">History</a></li>
+            <li><a href="rate-us.html">Rate Us</a></li>
+            <li><a href="about.html">About Us</a></li>
+            <li class="nav-guest"><a href="index.html">Login</a></li>
+            <li class="nav-guest"><a href="index.html">Register</a></li>
+            <li id="nav-profile-wrap" class="hidden">
+                <div class="profile-dropdown" id="profile-dropdown">
+                    <button class="dropdown-toggle" id="profile-dropdown-toggle" type="button">My Profile ▾</button>
+                    <ul class="dropdown-menu">
+                        <li><a href="profile.html">My Profile</a></li>
+                        <li><a href="admin.html" id="nav-manage-users" style="display:none">Manage Users</a></li>
+                        <li><button type="button" id="nav-logout">Log out</button></li>
+                    </ul>
+                </div>
+            </li>
+            <li><button id="theme-toggle" class="theme-toggle-btn" type="button">Switch Theme</button></li>
+        </ul>
+    </nav>
+    <main class="container">
+        <div class="form-container about-section">
+            <h2>About Us</h2>
+            <p>Primal-Fit is built by a small team focused on helping you stay consistent with your fitness goals.</p>
+            <h3>Main developers</h3>
+            <ul>
+                <li>Baimen Ali</li>
+                <li>Shyngys Abdulaev</li>
+                <li>Kalen Muhammedali</li>
+            </ul>
+            <h3>Contact</h3>
+            <p>Phone: <a href="tel:+77777777777">+7 777 777 77 77</a></p>
+            <p>Email: <a href="mailto:support@fit.com">support@fit.com</a></p>
+        </div>
+    </main>
+    <footer class="site-footer">
+        <p>© 2025 Primal-Fit. All rights reserved.</p>
+        <p>Built for everyone who wants to get stronger and healthier.</p>
+    </footer>
+    <script src="js/nav.js"></script>
+</body>
+</html>

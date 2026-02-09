@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workout — Primal-Fit</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .workout-name { color: var(--text-color); margin-bottom: 1rem; }
+        .ex-block { background: var(--surface); border-radius: 12px; padding: 1rem; margin-bottom: 1rem; border: 1px solid rgba(255,255,255,0.1); }
+        .ex-block h4 { margin: 0 0 0.5rem; color: var(--accent-color); }
+        .ex-block .target { color: var(--muted-text); font-size: 0.9rem; margin-bottom: 0.75rem; }
+        .set-row { display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.5rem; flex-wrap: wrap; }
+        .set-row input { width: 60px; margin: 0; }
+        .rest-timer { position: fixed; bottom: 1rem; right: 1rem; background: var(--primary-color); color: #fff; padding: 1rem 1.5rem; border-radius: 12px; font-size: 1.5rem; z-index: 50; }
+        .rest-timer.hidden { display: none; }
+        .finish-section { margin-top: 1.5rem; }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="logo"><a href="dashboard.html" style="color:inherit;text-decoration:none">Primal-Fit</a></div>
+        <button class="nav-burger" id="nav-burger" aria-label="Menu"><span></span><span></span><span></span></button>
+        <ul class="nav-links" id="nav-links">
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><button id="theme-toggle" class="theme-toggle-btn" type="button">Switch Theme</button></li>
+        </ul>
+    </nav>
+    <main class="container">
+        <h2 class="workout-name" id="workout-title">Loading…</h2>
+        <p id="workout-loading" class="muted-text">Loading…</p>
+        <div id="workout-exercises"></div>
+        <div id="finish-section" class="finish-section hidden">
+            <label>Duration (minutes)</label>
+            <input type="number" id="finish-duration" min="1" value="30">
+            <label>RPE (1-10)</label>
+            <input type="number" id="finish-rpe" min="1" max="10" value="6">
+            <button type="button" id="finish-btn" class="btn">Finish workout</button>
+        </div>
+    </main>
+    <div id="rest-timer" class="rest-timer hidden"><span id="rest-secs">0</span>s rest</div>
+    <script src="js/api.js"></script>
+    <script src="js/nav.js"></script>
+    <script>
+        if (!window.requireAuth()) {}
+        var token = window.getToken();
+        var scheduledId = new URLSearchParams(window.location.search).get('id');
+        var workoutData = null;
+        var exerciseLogs = [];
+
+        function loadScheduled() {
+            fetch(window.API_URL + '/scheduled/' + scheduledId, { headers: { 'Authorization': 'Bearer ' + token } })
+                .then(function (r) { return r.json(); })
+                .then(function (s) {
+                    if (!s.workoutTemplateId) { document.getElementById('workout-loading').textContent = 'Workout not found.'; return; }
+                    workoutData = s;
+                    var w = s.workoutTemplateId;
+                    document.getElementById('workout-title').textContent = w.name || 'Workout';
+                    document.getElementById('workout-loading').classList.add('hidden');
+                    var container = document.getElementById('workout-exercises');
+                    (w.exercises || []).forEach(function (ex, idx) {
+                        exerciseLogs.push({ exerciseName: ex.name, sets: [] });
+                        var block = document.createElement('div');
+                        block.className = 'ex-block';
+                        block.innerHTML = '<h4>' + ex.name + '</h4><p class="target">' + (ex.sets || 0) + ' sets × ' + (ex.reps || '') + ' (rest ' + (ex.rest || 60) + 's)</p><div class="sets-input" data-idx="' + idx + '"></div><button type="button" class="add-set btn" style="width:auto;margin-top:0.5rem" data-idx="' + idx + '">Add set</button> <button type="button" class="rest-btn btn" style="width:auto;margin-top:0.5rem" data-rest="' + (ex.rest || 60) + '">Rest ' + (ex.rest || 60) + 's</button>';
+                        container.appendChild(block);
+                        var setsDiv = block.querySelector('.sets-input');
+                        for (var i = 0; i < (ex.sets || 1); i++) addSetRow(setsDiv, idx);
+                        block.querySelector('.add-set').addEventListener('click', function () { addSetRow(setsDiv, idx); });
+                        block.querySelector('.rest-btn').addEventListener('click', function () {
+                            var secs = parseInt(this.getAttribute('data-rest'), 10);
+                            var el = document.getElementById('rest-timer');
+                            el.classList.remove('hidden');
+                            var span = document.getElementById('rest-secs');
+                            var x = secs;
+                            span.textContent = x;
+                            var t = setInterval(function () {
+                                x--;
+                                span.textContent = x;
+                                if (x <= 0) { clearInterval(t); el.classList.add('hidden'); }
+                            }, 1000);
+                        });
+                    });
+                    document.getElementById('finish-section').classList.remove('hidden');
+                })
+                .catch(function () { document.getElementById('workout-loading').textContent = 'Error loading workout.'; });
+        }
+        function addSetRow(parent, idx) {
+            var row = document.createElement('div');
+            row.className = 'set-row';
+            row.innerHTML = '<input type="number" placeholder="kg" class="set-weight" min="0" step="0.5"><input type="number" placeholder="reps" class="set-reps" min="0">';
+            parent.appendChild(row);
+        }
+        document.getElementById('finish-btn').addEventListener('click', function () {
+            var blocks = document.querySelectorAll('.ex-block');
+            blocks.forEach(function (block, idx) {
+                var rows = block.querySelectorAll('.set-row');
+                var sets = [];
+                rows.forEach(function (r) {
+                    var w = parseFloat(r.querySelector('.set-weight').value) || null;
+                    var rep = parseInt(r.querySelector('.set-reps').value, 10);
+                    sets.push({ weight: w, reps: rep || 0, completed: true });
+                });
+                exerciseLogs[idx].sets = sets;
+            });
+            var payload = {
+                scheduledWorkoutId: scheduledId || undefined,
+                durationMinutes: parseInt(document.getElementById('finish-duration').value, 10) || 30,
+                rpe: parseInt(document.getElementById('finish-rpe').value, 10) || 6,
+                exerciseLogs: exerciseLogs
+            };
+            fetch(window.API_URL + '/workoutlogs', {
+                method: 'POST',
+                headers: window.getAuthHeaders(),
+                body: JSON.stringify(payload)
+            }).then(function (r) { return r.json(); }).then(function (d) {
+                if (d._id) window.location.href = 'history.html'; else alert(d.message || 'Failed to save.');
+            });
+        });
+        if (scheduledId) loadScheduled();
+        else document.getElementById('workout-loading').textContent = 'No workout selected. Open from Calendar or Dashboard.';
+    </script>
+</body>
+</html>

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rate Us — Primal-Fit</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .rate-page { max-width: 560px; margin: 0 auto 2rem; }
+        .rate-card {
+            background: var(--surface);
+            border: 1px solid rgba(255,255,255,0.14);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+        }
+        .theme-light .rate-card {
+            background: rgba(255,255,255,0.95);
+            border-color: rgba(0,0,0,0.08);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.08);
+        }
+        .rate-card h2 { margin: 0 0 0.5rem; color: var(--text-color); font-size: 1.75rem; }
+        .rate-card .subtitle { color: var(--muted-text); margin-bottom: 1.5rem; font-size: 1rem; line-height: 1.5; }
+        .rate-stars-wrap { margin-bottom: 1.5rem; }
+        .rate-stars-wrap label { display: block; color: var(--text-color); font-size: 0.95rem; margin-bottom: 0.5rem; }
+        .stars-row { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+        .stars-row span {
+            font-size: 2.25rem;
+            color: var(--muted-text);
+            cursor: pointer;
+            transition: color 0.15s, transform 0.15s;
+            line-height: 1;
+        }
+        .stars-row span:hover { transform: scale(1.1); }
+        .stars-row span.active { color: #f59e0b; }
+        .rate-review-wrap { margin-bottom: 1.5rem; }
+        .rate-review-wrap label { display: block; color: var(--text-color); font-size: 0.95rem; margin-bottom: 0.5rem; }
+        .rate-review-wrap textarea {
+            width: 100%;
+            min-height: 140px;
+            padding: 14px 16px;
+            border-radius: 14px;
+            font-size: 1rem;
+            line-height: 1.6;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.06);
+            color: var(--text-color);
+            resize: vertical;
+        }
+        .theme-light .rate-review-wrap textarea {
+            background: #fff;
+            border-color: rgba(0,0,0,0.12);
+            color: var(--text-color);
+        }
+        .rate-review-wrap textarea::placeholder { color: var(--muted-text); }
+        .rate-review-wrap textarea:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.2);
+        }
+        .rate-submit-btn { width: 100%; margin: 0; padding: 14px; font-size: 1.05rem; border-radius: 14px; }
+        .rate-feedback { margin-top: 1rem; padding: 12px; border-radius: 12px; font-weight: 500; }
+        .rate-feedback.success { background: rgba(34, 197, 94, 0.2); color: var(--success-color); }
+        .rate-feedback.error { background: rgba(239, 68, 68, 0.15); color: var(--danger-color); }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="logo"><a href="main.html" style="color: inherit; text-decoration: none;">Primal-Fit</a></div>
+        <button class="nav-burger" id="nav-burger" aria-label="Menu"><span></span><span></span><span></span></button>
+        <ul class="nav-links" id="nav-links">
+            <li><a href="main.html">Home</a></li>
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="workout-plans.html">Workout Plans</a></li>
+            <li><a href="exercises.html">Exercises</a></li>
+            <li><a href="calendar.html">Calendar</a></li>
+            <li><a href="history.html">History</a></li>
+            <li><a href="rate-us.html">Rate Us</a></li>
+            <li><a href="about.html">About Us</a></li>
+            <li class="nav-guest"><a href="index.html">Login</a></li>
+            <li class="nav-guest"><a href="index.html">Register</a></li>
+            <li id="nav-profile-wrap" class="hidden">
+                <div class="profile-dropdown" id="profile-dropdown">
+                    <button class="dropdown-toggle" id="profile-dropdown-toggle" type="button">My Profile ▾</button>
+                    <ul class="dropdown-menu">
+                        <li><a href="profile.html">My Profile</a></li>
+                        <li><a href="admin.html" id="nav-manage-users" style="display:none">Manage Users</a></li>
+                        <li><button type="button" id="nav-logout">Log out</button></li>
+                    </ul>
+                </div>
+            </li>
+            <li><button id="theme-toggle" class="theme-toggle-btn" type="button">Switch Theme</button></li>
+        </ul>
+    </nav>
+    <main class="container">
+        <div id="login-required-banner" class="login-required-banner hidden">
+            Please <a href="index.html?reason=login">log in</a> to submit a review. Your feedback will be saved to your account.
+        </div>
+        <div class="rate-page">
+            <div class="rate-card">
+                <h2>Rate us</h2>
+                <p class="subtitle">Your feedback helps us improve. Choose 1–5 stars and optionally leave a comment.</p>
+                <form id="review-form">
+                    <div class="rate-stars-wrap">
+                        <label>Your rating (required)</label>
+                        <div class="stars-row" id="stars">
+                            <span data-rating="1" title="1 star">★</span>
+                            <span data-rating="2" title="2 stars">★</span>
+                            <span data-rating="3" title="3 stars">★</span>
+                            <span data-rating="4" title="4 stars">★</span>
+                            <span data-rating="5" title="5 stars">★</span>
+                        </div>
+                    </div>
+                    <input type="hidden" id="rating" name="rating" value="0">
+                    <div class="rate-review-wrap">
+                        <label for="review-text">Your review (optional)</label>
+                        <textarea id="review-text" name="review" placeholder="Tell us what you think — what you liked, what we could do better..."></textarea>
+                    </div>
+                    <button type="submit" class="rate-submit-btn">Submit review</button>
+                </form>
+                <div id="review-feedback" class="rate-feedback hidden"></div>
+            </div>
+        </div>
+    </main>
+    <footer class="site-footer">
+        <p>© 2025 Primal-Fit. All rights reserved.</p>
+        <p>Built for everyone who wants to get stronger and healthier.</p>
+    </footer>
+    <script src="js/api.js"></script>
+    <script src="js/nav.js"></script>
+    <script>
+        var API_URL = window.API_URL;
+        var token = window.getToken();
+        if (!token) document.getElementById('login-required-banner').classList.remove('hidden');
+        var selectedRating = 0;
+        var starsEl = document.getElementById('stars');
+        var ratingInput = document.getElementById('rating');
+        var form = document.getElementById('review-form');
+        var feedback = document.getElementById('review-feedback');
+
+        function setFeedback(msg, isError) {
+            feedback.textContent = msg || '';
+            feedback.className = 'rate-feedback ' + (isError ? 'error' : 'success');
+            feedback.classList.toggle('hidden', !msg);
+        }
+
+        starsEl.querySelectorAll('span').forEach(function(span) {
+            span.addEventListener('click', function() {
+                selectedRating = parseInt(this.getAttribute('data-rating'), 10);
+                ratingInput.value = selectedRating;
+                starsEl.querySelectorAll('span').forEach(function(s) { s.classList.remove('active'); });
+                for (var i = 0; i < selectedRating; i++) starsEl.children[i].classList.add('active');
+            });
+        });
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            setFeedback('', false);
+            if (!token) {
+                window.location.href = 'index.html?reason=login';
+                return;
+            }
+            if (selectedRating < 1 || selectedRating > 5) {
+                setFeedback('Please select a rating from 1 to 5 stars.', true);
+                return;
+            }
+            fetch(API_URL + '/reviews', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+                body: JSON.stringify({ rating: selectedRating, review: document.getElementById('review-text').value })
+            }).then(function(r) { return r.json(); }).then(function(d) {
+                if (d._id || d.user) {
+                    setFeedback('Thank you! Your review has been saved.', false);
+                    form.reset();
+                    selectedRating = 0;
+                    ratingInput.value = '0';
+                    starsEl.querySelectorAll('span').forEach(function(s) { s.classList.remove('active'); });
+                } else {
+                    setFeedback(d.message || 'Could not submit review.', true);
+                }
+            }).catch(function() {
+                setFeedback('Connection error. Please try again.', true);
+            });
+        });
+    </script>
+</body>
+</html>
