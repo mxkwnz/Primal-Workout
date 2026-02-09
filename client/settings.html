@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings — Primal-Fit</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .set-page { max-width: 480px; margin: 0 auto; }
+        .set-page h2 { color: var(--text-color); margin-bottom: 1rem; }
+        .set-page .field { margin-bottom: 1rem; }
+        .set-page label { display: block; margin-bottom: 0.35rem; color: var(--muted-text); }
+        .set-page select { max-width: 200px; }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="logo"><a href="main.html" style="color:inherit;text-decoration:none">Primal-Fit</a></div>
+        <button class="nav-burger" id="nav-burger" aria-label="Menu"><span></span><span></span><span></span></button>
+        <ul class="nav-links" id="nav-links">
+            <li><a href="main.html">Home</a></li>
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="workout-plans.html">Workout Plans</a></li>
+            <li><a href="exercises.html">Exercises</a></li>
+            <li><a href="calendar.html">Calendar</a></li>
+            <li><a href="history.html">History</a></li>
+            <li><a href="rate-us.html">Rate Us</a></li>
+            <li><a href="about.html">About Us</a></li>
+            <li class="nav-guest"><a href="index.html">Login</a></li>
+            <li class="nav-guest"><a href="index.html">Register</a></li>
+            <li id="nav-profile-wrap" class="hidden">
+                <div class="profile-dropdown" id="profile-dropdown">
+                    <button class="dropdown-toggle" id="profile-dropdown-toggle" type="button">My Profile ▾</button>
+                    <ul class="dropdown-menu">
+                        <li><a href="profile.html">My Profile</a></li>
+                        <li><a href="admin.html" id="nav-manage-users" style="display:none">Manage Users</a></li>
+                        <li><button type="button" id="nav-logout">Log out</button></li>
+                    </ul>
+                </div>
+            </li>
+            <li><button id="theme-toggle" class="theme-toggle-btn" type="button">Switch Theme</button></li>
+        </ul>
+    </nav>
+    <main class="container set-page">
+        <h2>Settings</h2>
+        <p id="set-msg" class="muted-text"></p>
+        <div class="field">
+            <label>Units</label>
+            <select id="set-units">
+                <option value="kg">kg</option>
+                <option value="lb">lb</option>
+            </select>
+        </div>
+        <div class="field">
+            <label>Language</label>
+            <select id="set-language">
+                <option value="en">English</option>
+            </select>
+        </div>
+        <div class="field">
+            <label><input type="checkbox" id="set-notifications" checked> Notifications</label>
+        </div>
+        <button type="button" id="set-save" class="btn">Save settings</button>
+    </main>
+    <script src="js/api.js"></script>
+    <script src="js/nav.js"></script>
+    <script>
+        if (!window.requireAuth()) {}
+        var token = window.getToken();
+        fetch(window.API_URL + '/users/profile', { headers: { 'Authorization': 'Bearer ' + token } })
+            .then(function (r) { return r.json(); })
+            .then(function (u) {
+                var s = u.settings || {};
+                if (s.units) document.getElementById('set-units').value = s.units;
+                if (s.language) document.getElementById('set-language').value = s.language;
+                document.getElementById('set-notifications').checked = s.notifications !== false;
+            });
+        document.getElementById('set-save').addEventListener('click', function () {
+            var payload = {
+                settings: {
+                    units: document.getElementById('set-units').value,
+                    language: document.getElementById('set-language').value,
+                    notifications: document.getElementById('set-notifications').checked
+                }
+            };
+            fetch(window.API_URL + '/users/profile', {
+                method: 'PUT',
+                headers: window.getAuthHeaders(),
+                body: JSON.stringify(payload)
+            }).then(function (r) { return r.json(); }).then(function (d) {
+                document.getElementById('set-msg').textContent = (d.settings || d._id) ? 'Settings saved.' : (d.message || 'Failed.');
+            });
+        });
+    </script>
+</body>
+</html>
