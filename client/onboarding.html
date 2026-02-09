@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Set up your profile — Primal-Fit</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .onboarding { max-width: 520px; margin: 2rem auto; padding: 1rem; }
+        .onboarding h2 { color: var(--text-color); margin-bottom: 1.5rem; }
+        .step { display: none; }
+        .step.active { display: block; }
+        .step label { display: block; margin: 0.75rem 0 0.25rem; color: var(--text-color); }
+        .step input[type="number"], .step select { margin-bottom: 0.5rem; }
+        .chk-wrap { margin: 0.5rem 0; }
+        .chk-wrap label { display: inline; margin-left: 0.5rem; }
+        .btn-row { margin-top: 1.5rem; display: flex; gap: 1rem; }
+        .btn-row button { flex: 1; }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="logo"><a href="main.html" style="color:inherit;text-decoration:none">Primal-Fit</a></div>
+        <button class="nav-burger" id="nav-burger" aria-label="Menu"><span></span><span></span><span></span></button>
+        <ul class="nav-links" id="nav-links">
+            <li><a href="main.html">Home</a></li>
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="workout-plans.html">Workout Plans</a></li>
+            <li><a href="exercises.html">Exercises</a></li>
+            <li><a href="calendar.html">Calendar</a></li>
+            <li><a href="history.html">History</a></li>
+            <li><a href="rate-us.html">Rate Us</a></li>
+            <li><a href="about.html">About Us</a></li>
+            <li class="nav-guest"><a href="index.html">Login</a></li>
+            <li class="nav-guest"><a href="index.html">Register</a></li>
+            <li id="nav-profile-wrap" class="hidden">
+                <div class="profile-dropdown" id="profile-dropdown">
+                    <button class="dropdown-toggle" id="profile-dropdown-toggle" type="button">My Profile ▾</button>
+                    <ul class="dropdown-menu">
+                        <li><a href="profile.html">My Profile</a></li>
+                        <li><a href="admin.html" id="nav-manage-users" style="display:none">Manage Users</a></li>
+                        <li><button type="button" id="nav-logout">Log out</button></li>
+                    </ul>
+                </div>
+            </li>
+            <li><button id="theme-toggle" class="theme-toggle-btn" type="button">Switch Theme</button></li>
+        </ul>
+    </nav>
+    <main class="onboarding container">
+        <h2>Set up your profile</h2>
+        <p id="onboard-msg" class="muted-text"></p>
+        <form id="onboard-form">
+            <div class="step active" data-step="1">
+                <label>Goal</label>
+                <select id="goal" required>
+                    <option value="loose_fat">Lose fat</option>
+                    <option value="gain_muscle">Gain muscle</option>
+                    <option value="maintain">Maintain</option>
+                    <option value="endurance">Endurance</option>
+                    <option value="strength">Strength</option>
+                </select>
+            </div>
+            <div class="step" data-step="2">
+                <label>Activity level</label>
+                <select id="activityLevel">
+                    <option value="sedentary">Sedentary</option>
+                    <option value="light">Light</option>
+                    <option value="moderate" selected>Moderate</option>
+                    <option value="active">Active</option>
+                    <option value="very_active">Very active</option>
+                </select>
+            </div>
+            <div class="step" data-step="3">
+                <label>Equipment (optional)</label>
+                <div class="chk-wrap"><input type="checkbox" id="eq-home" value="home"><label for="eq-home">Home</label></div>
+                <div class="chk-wrap"><input type="checkbox" id="eq-gym" value="gym"><label for="eq-gym">Gym</label></div>
+                <div class="chk-wrap"><input type="checkbox" id="eq-dumbbells" value="dumbbells"><label for="eq-dumbbells">Dumbbells</label></div>
+                <div class="chk-wrap"><input type="checkbox" id="eq-barbell" value="barbell"><label for="eq-barbell">Barbell</label></div>
+                <div class="chk-wrap"><input type="checkbox" id="eq-bands" value="bands"><label for="eq-bands">Bands</label></div>
+            </div>
+            <div class="step" data-step="4">
+                <label>Restrictions / injuries (optional)</label>
+                <input type="text" id="restrictions" placeholder="e.g. knee pain, lower back">
+            </div>
+            <div class="step" data-step="5">
+                <label>Workout days per week</label>
+                <select id="daysPerWeek">
+                    <option value="2">2</option>
+                    <option value="3" selected>3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                </select>
+            </div>
+            <div class="btn-row">
+                <button type="button" id="prev-btn">Previous</button>
+                <button type="button" id="next-btn">Next</button>
+                <button type="submit" id="submit-btn" style="display:none">Finish</button>
+            </div>
+        </form>
+    </main>
+    <script src="js/api.js"></script>
+    <script src="js/nav.js"></script>
+    <script>
+        if (!window.requireAuth()) {}
+        var step = 1, totalSteps = 5;
+        var steps = document.querySelectorAll('.step');
+        var prevBtn = document.getElementById('prev-btn');
+        var nextBtn = document.getElementById('next-btn');
+        var submitBtn = document.getElementById('submit-btn');
+
+        function showStep(n) {
+            step = n;
+            steps.forEach(function (s) { s.classList.remove('active'); });
+            var el = document.querySelector('.step[data-step="' + step + '"]');
+            if (el) el.classList.add('active');
+            prevBtn.style.display = step === 1 ? 'none' : 'block';
+            nextBtn.style.display = step === totalSteps ? 'none' : 'block';
+            submitBtn.style.display = step === totalSteps ? 'block' : 'none';
+        }
+
+        prevBtn.addEventListener('click', function () { showStep(step - 1); });
+        nextBtn.addEventListener('click', function () { showStep(step + 1); });
+
+        document.getElementById('onboard-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+            var equipment = [];
+            ['eq-home', 'eq-gym', 'eq-dumbbells', 'eq-barbell', 'eq-bands'].forEach(function (id) {
+                var c = document.getElementById(id);
+                if (c && c.checked) equipment.push(c.value);
+            });
+            var payload = {
+                profile: {
+                    goal: document.getElementById('goal').value,
+                    activityLevel: document.getElementById('activityLevel').value,
+                    equipment: equipment,
+                    restrictions: document.getElementById('restrictions').value
+                },
+                onboardingCompleted: true
+            };
+            fetch(window.API_URL + '/users/profile', {
+                method: 'PUT',
+                headers: window.getAuthHeaders(),
+                body: JSON.stringify(payload)
+            }).then(function (r) { return r.json(); }).then(function (d) {
+                if (d.username || d._id) {
+                    document.getElementById('onboard-msg').textContent = 'Saved. Redirecting…';
+                    window.location.href = 'dashboard.html';
+                } else {
+                    document.getElementById('onboard-msg').textContent = d.message || 'Update failed.';
+                }
+            }).catch(function () {
+                document.getElementById('onboard-msg').textContent = 'Connection error.';
+            });
+        });
+        showStep(1);
+    </script>
+</body>
+</html>
